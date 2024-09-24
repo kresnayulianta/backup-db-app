@@ -1,0 +1,33 @@
+{
+  "name": "backup-db-app",
+  "module": "src/index.ts",
+  "type": "module",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "bun src/index.ts",
+    "backup:pgsql": "bun src/backup/postgresql.ts",
+    "backup:mysql": "bun src/backup/mysql.ts",
+    "backup:all": "bun run backup:pgsql && bun run backup:mysql"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
+    "@types/bun": "latest",
+    "@types/md5": "^2.3.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.637.0",
+    "adm-zip": "^0.5.15",
+    "axios": "^1.7.5",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
+    "follow-redirects": "^1.15.6",
+    "form-data": "^4.0.0",
+    "md5": "^2.3.0",
+    "mysql2": "^3.11.0",
+    "pg": "^8.12.0"
+  }
+}
