@@ -1,18 +1,26 @@
+import dayjs from "dayjs";
 import databaseConfig, { validateMysqlConfig } from "../config/database";
-import fileSystemConfig from "../config/filesystem";
-import notificationConfig from "../config/notification";
+import { validateR2Config } from "../config/filesystem";
+import { validateSlackConfig } from "../config/notification";
+import useBackupMysql from "../utils/useBackupMysql";
+import useSlackNotification from "../utils/useSlackNotification";
+import useUploadToR2 from "../utils/useUploadToR2";
 
-validateMysqlConfig();
+export const backupMysql = () => {
+    validateMysqlConfig();
+    validateR2Config();
+    validateSlackConfig();
 
-databaseConfig.mysql.forEach((database) => {
-    console.log('MySQL Databases:', database.database);
-    console.log('MySQL User:', database.user);
-    console.log('MySQL Host:', database.host);
-    console.log('MySQL Password:', database.password);
-    console.log('MySQL Port:', database.port);
-    console.log('DONE');
+    databaseConfig.mysql.forEach(async (database) => {
+        const pathBackup: string = await useBackupMysql(database.database, database.user, database.password, database.host);
 
-    console.log('Slack Webhook URL:', notificationConfig.slack.webhookUrl);
-    // console.log('Cloudflare R2 Bucket Name:', fileSystemConfig.cloudflareR2.bucketName);
-})
+        // Upload backup files to Cloudflare R2
+        await useUploadToR2({
+            filePaths: pathBackup,
+        })
+
+        // Slack notification
+        useSlackNotification('DONE BACKUP MYSQL DATABASE: ' + database.database + `\nAt: ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`);
+    })
+}
 

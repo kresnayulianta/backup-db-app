@@ -33,6 +33,8 @@ This is a JavaScript application built with [Bun](https://bun.sh/) to automate t
 
 ## Usage
 
+### With Bun
+
 1. Run the backup script:
    ```bash
    bun run backup:pgsql
@@ -41,10 +43,26 @@ This is a JavaScript application built with [Bun](https://bun.sh/) to automate t
    ```
 2. The backup file will be created, zipped, and then uploaded to the configured cloud storage (AWS S3 or Cloudflare R2).
 
+### With Docker
+
+This application is configured to run a cron job that periodically backs up your databases.
+
+1. Build the Docker image:
+    ```bash
+    docker build -t backup-db-app .
+    ```
+2. Run the Docker container with your environment variables:
+    ```bash
+    docker run --env-file .env backup-db-app
+    ```
+
 ## Configuration
 
 - Ensure that your PostgreSQL or MySQL server is properly configured.
 - Ensure the .env file contains correct credentials for both the database and the cloud storage service.
+- **CRON_SCHEDULE_MYSQL**: (Optional) Set the cron schedule for the MySQL backup job. Defaults to `0 0 * * *` (every day at midnight).
+- **CRON_SCHEDULE_POSTGRESQL**: (Optional) Set the cron schedule for the PostgreSQL backup job. Defaults to `0 0 * * *` (every day at midnight).
+- You can use a site like [crontab.guru](https://crontab.guru/) to help you build a cron expression.
 - Modify the script as needed for specific backup strategies or file retention policies.
 
 ## License
