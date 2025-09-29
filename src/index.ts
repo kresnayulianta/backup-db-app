@@ -20,6 +20,20 @@ console.log('Cron jobs scheduled.');
 Bun.serve({
     port: process.env.PORT || 3000,
     fetch(req) {
+        const url = new URL(req.url);
+
+        if (url.pathname === '/mysql') {
+            console.log('HTTP trigger: Running mysql backup job...');
+            backupMysql();
+            return new Response('Triggered MySQL backup');
+        }
+
+        if (url.pathname === '/postgresql') {
+            console.log('HTTP trigger: Running postgresql backup job...');
+            backupPostgresql();
+            return new Response('Triggered PostgreSQL backup');
+        }
+
         return new Response("Cron job is running.");
     },
 });
