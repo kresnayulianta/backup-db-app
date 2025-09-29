@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import dayjs from "dayjs";
 import databaseConfig, { validatePostgresConfig } from "../config/database";
 import { validateR2Config } from "../config/filesystem";
@@ -22,4 +23,10 @@ export const backupPostgresql = () => {
         // Slack notification
         useSlackNotification('DONE BACKUP POSTGRESQL DATABASE: ' + database.database + `\nAt: ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`);
     })
+}
+
+// Allow running this file directly: `bun src/backup/postgresql.ts`
+if (import.meta.main) {
+    console.log('Running postgresql backup job...');
+    backupPostgresql();
 }

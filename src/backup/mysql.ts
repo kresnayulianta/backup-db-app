@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import dayjs from "dayjs";
 import databaseConfig, { validateMysqlConfig } from "../config/database";
 import { validateR2Config } from "../config/filesystem";
@@ -22,5 +23,11 @@ export const backupMysql = () => {
         // Slack notification
         useSlackNotification('DONE BACKUP MYSQL DATABASE: ' + database.database + `\nAt: ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`);
     })
+}
+
+// Allow running this file directly: `bun src/backup/mysql.ts`
+if (import.meta.main) {
+    console.log('Running mysql backup job...');
+    backupMysql();
 }
 
