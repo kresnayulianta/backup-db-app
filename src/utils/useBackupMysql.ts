@@ -7,9 +7,13 @@ import fs from 'fs';
 
 async function useBackupMysql(dbName: string, user: string, password: string, host: string): Promise<string> {
     const backupPath = process.env.BACKUP_PATH_LOCAL || path.resolve('./file_backups');
+    // Ensure backup directory exists
+    if (!fs.existsSync(backupPath)) {
+        fs.mkdirSync(backupPath, { recursive: true });
+    }
     const pathMYSQLDump = process.env.MYSQLDUMP_PATH || 'mysqldump';
     const backupFileName = `${backupPath}/mysql-${dbName}.sql`;
-    const command = `${pathMYSQLDump} -u ${user} -p${password} -h ${host} ${dbName} > ${backupFileName}`;
+    const command = `${pathMYSQLDump} -u ${user} -p${password} -h ${host} ${dbName} > \"${backupFileName}\"`;
 
     try {
         await new Promise<void>((resolve, reject) => {

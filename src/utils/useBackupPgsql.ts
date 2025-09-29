@@ -7,9 +7,13 @@ import fs from 'fs';
 
 async function useBackupPgsql(dbName: string, user: string, password: string, host: string, port: string): Promise<string> {
     const backupPath = process.env.BACKUP_PATH_LOCAL || path.resolve('./file_backups');
+    // Ensure backup directory exists
+    if (!fs.existsSync(backupPath)) {
+        fs.mkdirSync(backupPath, { recursive: true });
+    }
     const pathPGDump = process.env.PGDUMP_PATH || 'pg_dump';
     const backupFileName = `${backupPath}/postgresql-${dbName}.sql`;
-    const command = `PGPASSWORD=${password} ${pathPGDump} --username=${user} --host=${host} --port=${port} --dbname=${dbName} --file=${backupFileName} --inserts --clean --if-exists`;
+    const command = `PGPASSWORD=${password} ${pathPGDump} --username=${user} --host=${host} --port=${port} --dbname=${dbName} --file=\"${backupFileName}\" --inserts --clean --if-exists`;
 
     console.log(`Backup PostgreSQL database: ${dbName}`);
 
